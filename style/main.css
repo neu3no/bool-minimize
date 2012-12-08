@@ -1,0 +1,108 @@
+
+body {
+	margin:0;
+}
+
+/* head */
+header, .dark{
+	color:white;
+	background:#222;
+	box-shadow: inset 0px 0px 8px #000;
+}
+
+header,h1,h2,h3 {
+	font-family: 'Rationale', serife;
+}
+
+header>h1{
+	margin:0;
+	padding: 1.5em 0 0.3em 1.5em;
+}
+
+/* main */
+#main{
+	padding: 1em;
+}
+
+table{
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+
+table caption{
+	height:2em;
+}
+
+table th, table td, #sourcetable .yval input{
+	padding: 0.5em 1em;
+}
+table td, table th, #sourcetable .yval input{
+	font-family: "Droid Sans Mono";
+	font-size:16px;
+}
+
+table tr    td:last-child   { border-right:none; }
+table tr    td:first-child  { border-left:none; }
+table tbody tr:last-child td{ border-bottom:none; }
+
+/*
+table tr:first-child th:last-child{ border-top-right-radius: 6px; }
+table tr:first-child th:first-child{ border-top-left-radius: 6px; } */
+
+table td{
+	text-align:center;
+	font-family:monospace;
+	border: 1px solid #222;
+}
+
+#source, #target{
+	width:100%;
+	text-align: center;
+	padding: 2em 0;
+	box-shadow: 0 0 3px rgba(0,0,0,0.3) inset;
+}
+
+#sourcetable, #targettable{
+	margin:auto;
+}
+
+/* the editable Y-Value should not exist on other then source table */
+#sourcetable .yval{
+	background-color:#ddd;
+	padding:0;
+}
+
+#sourcetable .yval input{
+	width: 2em;
+	height:1em;
+	margin:0;
+	text-align:center;
+	border:none;
+	background-color:inherit;
+}
+
+#sourcetable span {
+	margin: 0.2em;
+}
+
+#sourcetable button {
+	margin: 0.2em;
+	margin-bottom: 0.4em;
+	border-style: none;
+	border-radius: 4px;
+	padding:0.4em;
+	width:2em;
+}
+#sourcetable button:active{
+	background: #999;
+}
+
+/* foot */
+footer{
+	font-size:0.8em;
+	text-align:right;
+	padding: 0 1em;
+	position:fixed;
+	bottom:0.2em;
+	right:0.5em;
+}

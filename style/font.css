@@ -1,0 +1,12 @@
+@font-face {
+  font-family: 'Rationale';
+  font-style: normal;
+  font-weight: normal;
+  src: local('Rationale'), local('Rationale-Regular'), url('font.woff') format('truetype');
+}
+@font-face {
+  font-family: 'Droid Sans Mono';
+  font-style: normal;
+  font-weight: normal;
+  src: local('Droid Sans Mono'), local('DroidSansMono'), url('droid.woff') format('woff');
+}
