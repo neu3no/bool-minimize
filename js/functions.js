@@ -49,7 +49,7 @@ Object.defineProperty(Number.prototype, "oneLiteralCount", {
 
 // i just not wanted to add such a weird function to object prototype ....
 
-function decToBin(number){
+function decToBin(number,minlen){
 	var a="";
 	while (number>0){
 		var c=number>>1<<1;	// shift one bit right and back, cuts the last binary digit
@@ -57,7 +57,24 @@ function decToBin(number){
 	  													 // and unmasked number as digit 
 	 	number=number>>1;	// now go on without the last digit 
 	}
+	while (a.length<minlen) a = "0" + a;
 	return a;
+}
+
+function maskedDecToBin(number, mask, minlen){
+	var bin = decToBin(number,minlen);
+	var msk = decToBin(mask  ,minlen);
+	var res = "";
+	
+	for (i=0; i<bin.length; i++){
+		if (msk[i]=="1"){
+			res += "-";
+		} else {
+			res += bin[i];
+		}
+	}
+	while (res.length<minlen) res = "0" + res;
+	return res;
 }
 
 // we need logarithm to the base 2 sometimes but 'Math.log' calculates to the 

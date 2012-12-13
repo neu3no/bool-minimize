@@ -55,6 +55,18 @@ table td{
 	border: 1px solid #222;
 }
 
+table button {
+	margin: 0.2em;
+	margin-bottom: 0.4em;
+	border-style: none;
+	border-radius: 4px;
+	padding:0.4em;
+	width:2em;
+}
+table button:active{
+	background: #999;
+}
+
 #source, #target{
 	width:100%;
 	text-align: center;
@@ -85,17 +97,6 @@ table td{
 	margin: 0.2em;
 }
 
-#sourcetable button {
-	margin: 0.2em;
-	margin-bottom: 0.4em;
-	border-style: none;
-	border-radius: 4px;
-	padding:0.4em;
-	width:2em;
-}
-#sourcetable button:active{
-	background: #999;
-}
 
 /* foot */
 footer{
