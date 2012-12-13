@@ -82,8 +82,8 @@ targetTable.prototype.fillTable = function(tableNum) {
 			for (vidx in tmpm) {
 				var tr = $("<tr/>");
 				var bin = maskedDecToBin(
-						tmpm[vidx][0]>>1, 
-						tmpm[vidx][1]>>1, 
+						tmpm[vidx][0], 
+						tmpm[vidx][1], 
 						this.quineTable.literalCount-1
 					);
 				for ( j = 0; j < this.cols - 1; j++)

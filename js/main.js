@@ -85,32 +85,14 @@ var init = function() {
 		var arr = stable.getMatrix();
 		var q = new quine(arr);
 
-		q.solve(function() {
-			pos=0;
-			do{
-				table = q.getTable(pos);
-				console.log(table);
-				for (t in table) {
-					console.log("------", t, "------")
-					for (te in table[[t]]) {
-						console.log(maskedDecToBin(table[t][te][0]>>1,table[t][te][1]>>1, q.literalCount));
-					}
-				}
-				console.log("=====================");
-				pos++;
-			} while(table != false)
-		});
-
 		if (!q.empty) {
-			 loadScene(1);
-			 q.solve(
-			 function(){
-			 }
-			 );
-			 ttable = new targetTable("#target", q);
+			q.solve(function() {
+				loadScene(1);
+				ttable = new targetTable("#target", q);
+			});
 		} else {
 			alert('plz add at least one "1".')
-		}
+		}/* */
 	};
 };
 
