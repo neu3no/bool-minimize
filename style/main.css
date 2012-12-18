@@ -31,6 +31,8 @@ table{
 
 table caption{
 	height:2em;
+	white-space: nowrap;
+	overflow:visible;
 }
 
 table th, table td, #sourcetable .yval input{
@@ -63,8 +65,9 @@ table button {
 	padding:0.4em;
 	width:2em;
 }
-table button:active{
-	background: #999;
+table button:active, button.active, input:focus{
+	background: #99a3a3!important;
+	box-shadow: 0 0 4px #455;
 }
 
 #source, #target{

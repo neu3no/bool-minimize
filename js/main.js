@@ -84,7 +84,7 @@ var init = function() {
 	stable.fire = function() {
 		var arr = stable.getMatrix();
 		var q = new quine(arr);
-
+		
 		if (!q.empty) {
 			q.solve(function() {
 				loadScene(1);

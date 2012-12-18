@@ -108,9 +108,10 @@ targetTable.prototype.previousTable = function() {
 
 function sourceTable(parent) {
 	this.table = $("<table/>");
-	this.inputCount = 2;
+	this.inputCount = 3;
 	this.parent = parent;
 	this.values = [];
+	this.fillMode = 'rand';
 	var stable = this;
 	// workaround for the scope of events, which replace 'this'
 
@@ -123,6 +124,9 @@ function sourceTable(parent) {
 	this.spanInputCount = $("<span/>");
 	this.buttonInputAdd = $("<button/>");
 	this.buttonInputRemove = $("<button/>");
+	this.buttonYZero = $("<button/>").addClass('modebtn');
+	this.buttonYOne = $("<button/>").addClass('modebtn');
+	this.buttonYRand = $("<button/>").addClass('modebtn').addClass("active");
 	this.buttonFire = $("<button/>");
 
 	// add ids / classes / attributes
@@ -132,11 +136,27 @@ function sourceTable(parent) {
 	// form the caption
 	$(this.buttonInputAdd).text("+");
 	$(this.buttonInputRemove).text("-");
+	$(this.buttonYZero).text("0");
+	$(this.buttonYOne).text("1");
+	$(this.buttonYRand).text("r");
 	$(this.buttonFire).text("go");
-	$(this.caption).append(this.spanInputCount).append(this.buttonInputRemove).append(this.buttonInputAdd).append(this.buttonFire);
+	
+	$(this.caption)
+			.append(this.buttonInputRemove)
+			.append(this.spanInputCount)
+			.append(this.buttonInputAdd)
+			.append("<span>|</span>")
+			.append(this.buttonYZero)
+			.append(this.buttonYOne)
+			.append(this.buttonYRand)
+			.append("<span>|</span>")
+			.append(this.buttonFire);
 
 	// append the elements to the html structure
-	$(this.table).append(this.caption).append(this.thead).append(this.tbody);
+	$(this.table)
+			.append(this.caption)
+			.append(this.thead)
+			.append(this.tbody);
 
 	// bind events
 	$(this.buttonInputAdd).click(this.addInput);
@@ -144,6 +164,31 @@ function sourceTable(parent) {
 	$(this.buttonFire).click(function() {
 		stable.fire();
 	});
+	
+	$(this.buttonYZero).click(
+		function(){
+			stable.fillMode='zero';
+			stable.tablefill();
+			$(".modebtn").removeClass('active');
+			$(this).addClass('active');
+		}
+	);
+	$(this.buttonYOne).click(
+		function(){
+			stable.fillMode='one';
+			stable.tablefill();
+			$(".modebtn").removeClass('active');
+			$(this).addClass('active');
+		}
+	);
+	$(this.buttonYRand).click(
+		function(){
+			stable.fillMode='rand';
+			stable.tablefill();
+			$(".modebtn").removeClass('active');
+			$(this).addClass('active');
+		}
+	);
 
 	// append the whole table to the parent givin by new();
 	$(this.parent).append(this.table);
@@ -171,6 +216,7 @@ sourceTable.prototype.tablefill = function() {
 	for ( i = 0; i < rows; i++) {
 		var tr = $("<tr/>");
 		var bin = decToBin(i);
+		var val;
 		while (bin.length < cols)
 		bin = "0" + bin;
 
@@ -178,7 +224,19 @@ sourceTable.prototype.tablefill = function() {
 			tr.append("<td>" + bin[j] + "</td>");
 
 		// the y-value wich should be edited by the user
-		var val = Math.round(Math.random());
+		switch (this.fillMode){
+			case "rand":
+				val = Math.round(Math.random());
+				break;
+			case "one":
+				val = 1;
+				break;
+			case "zero":
+				val = 0;
+				break;
+			default:
+				alert("wrong fill mode");
+		}
 		var input = $("<input maxlength='1' type='text' value='" + val + "'/>");
 		input.attr("rel", i);
 		input.change(this.checkYVal);
@@ -188,21 +246,23 @@ sourceTable.prototype.tablefill = function() {
 		this.values[i] = (i << 1) + val;
 	}
 
-	$(this.spanInputCount).text("inputs: " + this.inputCount);
+	$(this.spanInputCount).text(this.inputCount);
 	$(this.parent).css('min-width', $(this.table).width());
 	this.newTable();
 };
 
-sourceTable.prototype.checkYVal = function() {
-	var index = Number($(this).attr('rel'));
+sourceTable.prototype.checkYVal = function(elem) {
+	
+	if (!elem.attr) elem=this;
+	var index = Number($(elem).attr('rel'));
 
-	if ($(this).val() >= 1) {
-		$(this).val(1);
+	if ($(elem).val() >= 1) {
+		$(elem).val(1);
 	} else {
-		$(this).val(0);
+		$(elem).val(0);
 	}
 
-	stable.values[index] = (index << 1) + Number($(this).val());
+	stable.values[index] = (index << 1) + Number($(elem).val());
 	stable.changed(stable.values);
 };
 

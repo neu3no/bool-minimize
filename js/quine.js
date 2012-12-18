@@ -140,6 +140,8 @@ quine.prototype.compare = function() {
 
 	return (count > 0);
 }
+
+
 // triggers callback(bool canceled), when rdy
 quine.prototype.solve = function(callback) {
 	var maxSteps = 10;

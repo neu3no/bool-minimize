@@ -41,14 +41,29 @@ Object.defineProperty(Number.prototype, "oneLiteralCount", {
 					while(number>0){
 						var c=number>>1<<1;	// shift one bit right and back, cuts the last binary digit
 					 	ret=ret+number-c;
-					 	number=number>>1;	// now go on without the last digit 
+					 	number>>=1;	// now go on without the last digit 
 					}
 					return ret;
 				}
 });
 
-// i just not wanted to add such a weird function to object prototype ....
+Object.defineProperty(Number.prototype, "twoPowPartition",{
+	enumerable: false,
+	value: function(){
+		var res = new Array();
+		var pow = 1;
+		var num = 0+this;
+		while (num > 0){
+			if (num >> 1 << 1 != num)
+				res.push(pow);
+			pow*=2;
+			num>>=1;
+		}
+		return res;
+	}
+});
 
+// i just not wanted to add such an ugly function to object prototype ....
 function decToBin(number,minlen){
 	var a="";
 	while (number>0){
