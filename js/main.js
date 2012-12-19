@@ -21,6 +21,20 @@ var scenes = {
 			"visibility" : "hidden",
 			"width" : "0",
 			"float" : "none"
+		},
+		"#chart" : {
+			"display" : "none",
+			"visibility" : "hidden",
+			"width" : "0",
+			"float" : "none"
+		},
+		"#navTarget" : {
+			"cursor":"default",
+			"opacity": "0.25"
+		},
+		"#navChart" : {
+			"cursor":"default",
+			"opacity": "0.25"
 		}
 	},
 	1 : {
@@ -35,6 +49,48 @@ var scenes = {
 			"visibility" : "visible",
 			"width" : "59%",
 			"float" : "right"
+		},
+		"#chart" : {
+			"display" : "none",
+			"visibility" : "hidden",
+			"width" : "0",
+			"float" : "none"
+		},
+		"#navTarget" : {
+			"cursor":"pointer",
+			"opacity": "1"
+		},
+		"#navChart" : {
+			"cursor":"pointer",
+			"opacity": "1"
+		}
+	},
+	2 : {
+		"#target" : {
+			"display" : "block",
+			"visibility" : "visible",
+			"width" : "39%",
+			"float" : "left"
+		},
+		"#chart" : {
+			"display" : "block",
+			"visibility" : "visible",
+			"width" : "59%",
+			"float" : "right"
+		},
+		"#source" : {
+			"display" : "none",
+			"visibility" : "hidden",
+			"width" : "0",
+			"float" : "none"
+		},
+		"#navTarget" : {
+			"cursor":"pointer",
+			"opacity": "1"
+		},
+		"#navChart" : {
+			"cursor":"pointer",
+			"opacity": "1"
 		}
 	}
 };
@@ -73,27 +129,66 @@ var loadScene = function(index) {
 };
 
 var init = function() {
+	var hash=window.location.hash.substring(1);
+	var inputs=3;
+	var solved=false;
+
+	if (hash != ""){
+		inputs=Math.floor(Math.log2(hash.length));
+	}
+
 	// included from ui.js
-	stable = new sourceTable($("#source"));
+	stable = new sourceTable($("#source"),inputs);
 	loadScene(0);
+	if (hash !=""){
+		stable.tablefill(hash);
+	}
 
-	stable.newTable = function() {
+	// events
+	stable.newTable = function(arr) {
 		loadScene(0);
+		stable.changed(arr);
 	};
-
+	
 	stable.fire = function() {
 		var arr = stable.getMatrix();
 		var q = new quine(arr);
-		
 		if (!q.empty) {
 			q.solve(function() {
 				loadScene(1);
 				ttable = new targetTable("#target", q);
+				ptable = new pITable("#chart", q);
+				solved=true;
 			});
 		} else {
 			alert('plz add at least one "1".')
-		}/* */
+		}
 	};
+	
+	stable.changed = function(arr){
+		var tmp="#";
+		solved=false;
+		for (e in arr){
+			tmp += (arr[e]>>1<<1 == arr[e] ? "0" : "1");
+		}
+		window.location.hash=tmp;
+	};
+	
+	// navigation
+	$("#navInput").click(function(){
+		loadScene(0);
+	});
+	
+	$("#navTarget").click(function(){
+		stable.fire();
+	});
+	
+	$("#navChart").click(function(){
+		if (solved)
+			loadScene(2);
+		else
+			stable.fire();
+	});
 };
 
 $(document).ready(init);

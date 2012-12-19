@@ -13,6 +13,106 @@ if (!Object.N3OFUNCZ) {
 }
 // -
 
+function pITable(parent, quinetable){
+	this.parent=parent;
+	this.quineTable=quinetable;
+	this.currentchart=0;
+	this.labels = {
+		0: "plain chart",
+		1: "columns optimized"
+	};
+	pitable = this;
+	// at first check if a prime implicant table exists, if yes remove
+	$("#pitable").remove();
+	
+	this.table = $("<table/>");
+	
+	// create objects for the main table elements
+	this.caption = $("<caption/>");
+	this.thead = $("<thead/>");
+	this.tbody = $("<tbody/>");
+	
+	// add ids / classes / attributes
+	$(this.table).attr("id", "pitable");
+	$(this.thead).addClass("dark");
+	
+	// buttons ...
+	this.spanCurrent = $("<span/>");
+	this.buttonPrevious = $("<button/>");
+	this.buttonNext = $("<button/>");
+	
+	// form caption
+	$(this.buttonPrevious).html("&lt;");
+	$(this.buttonNext).html("&gt;");
+	
+	$(this.caption).append(this.buttonPrevious).append(this.spanCurrent).append(this.buttonNext);
+	
+	// append the elements to the html structure
+	$(this.table).append(this.caption).append(this.thead).append(this.tbody);
+	
+	// events
+	$(this.buttonNext).click(this.nextChart);
+	$(this.buttonPrevious).click(this.previousChart);
+	
+	$(this.parent).append(this.table);
+	this.fillChart(this.currentchart);
+	return this;
+}
+
+pITable.prototype.nextChart = function() {
+	pitable.fillChart(pitable.currentchart + 1);
+};
+
+pITable.prototype.previousChart = function() {
+	pitable.fillChart(pitable.currentchart - 1);
+};
+
+
+pITable.prototype.fillChart = function(chartNum) {
+	pichart = this.quineTable.getPIChart(chartNum);
+	
+	if (!pichart) 
+		return false;
+	else {
+		this.cols = pichart.mint.length;
+		$(this.spanCurrent).text(
+			this.labels[chartNum]
+		);
+		this.currentchart=chartNum;
+		
+		var trh=$("<tr/>");
+		trh.append("<td/>");
+		
+		for (coli in pichart.cols){
+			var txt=decToBin(coli,this.quineTable.literalCount-1);
+			trh.append($("<th/>").text(txt));
+		}
+		console.log(pichart.rows);
+			$(this.tbody).html("");
+		for (rowi in pichart.rows){
+			var tr = $("<tr/>");
+			var row=pichart.rows[rowi];
+	
+			tr.append($("<th/>").text(
+				maskedDecToBin(rowi[0],rowi[2],this.quineTable.literalCount-1)
+			).addClass("dark"));
+			
+			for (coli in pichart.cols){
+				var col=pichart.cols[coli];
+				var text=(
+					row.indexOf(Number(coli))>=0
+					? "X"
+					: " "
+				);
+				tr.append($("<td/>").text(text));
+			}
+			this.tbody.append(tr);
+		}
+		$(this.thead).html("");
+		$(this.thead).append(trh);
+	}
+};
+
 function targetTable(parent, quinetable) {
 	this.quineTable = quinetable;
 	this.currentTableNum = 0;
@@ -106,9 +206,9 @@ targetTable.prototype.previousTable = function() {
 
 // SOURCE TABLE
 
-function sourceTable(parent) {
+function sourceTable(parent, inputs) {
 	this.table = $("<table/>");
-	this.inputCount = 3;
+	this.inputCount = (inputs ? inputs : 3 );
 	this.parent = parent;
 	this.values = [];
 	this.fillMode = 'rand';
@@ -199,7 +299,8 @@ function sourceTable(parent) {
 	return this;
 };
 
-sourceTable.prototype.tablefill = function() {
+// preload should be an array of literals or a string
+sourceTable.prototype.tablefill = function(preload) {
 	var cols = this.inputCount;
 	var rows = Math.pow(2, cols);
 	this.values = new Array(rows);
@@ -224,18 +325,22 @@ sourceTable.prototype.tablefill = function() {
 			tr.append("<td>" + bin[j] + "</td>");
 
 		// the y-value wich should be edited by the user
-		switch (this.fillMode){
-			case "rand":
-				val = Math.round(Math.random());
-				break;
-			case "one":
-				val = 1;
-				break;
-			case "zero":
-				val = 0;
-				break;
-			default:
-				alert("wrong fill mode");
+		if ( preload && preload.length >= rows){
+			val = Number(preload[i]);
+		} else { 
+			switch (this.fillMode){
+				case "rand":
+					val = Math.round(Math.random());
+					break;
+				case "one":
+					val = 1;
+					break;
+				case "zero":
+					val = 0;
+					break;
+				default:
+					alert("wrong fill mode");
+			}
 		}
 		var input = $("<input maxlength='1' type='text' value='" + val + "'/>");
 		input.attr("rel", i);
@@ -248,7 +353,7 @@ sourceTable.prototype.tablefill = function() {
 
 	$(this.spanInputCount).text(this.inputCount);
 	$(this.parent).css('min-width', $(this.table).width());
-	this.newTable();
+	this.newTable(this.values);
 };
 
 sourceTable.prototype.checkYVal = function(elem) {
