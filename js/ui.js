@@ -19,7 +19,8 @@ function pITable(parent, quinetable){
 	this.currentchart=0;
 	this.labels = {
 		0: "plain chart",
-		1: "columns optimized"
+		1: "columns optimized",
+		2: "rows optimized"
 	};
 	pitable = this;
 	// at first check if a prime implicant table exists, if yes remove
@@ -75,26 +76,31 @@ pITable.prototype.fillChart = function(chartNum) {
 		return false;
 	else {
 		this.cols = pichart.mint.length;
-		$(this.spanCurrent).text(
-			this.labels[chartNum]
-		);
+		
+		
+		var text = this.labels[chartNum>0 ? ((chartNum-1)%2)+1 : 0];
+		$(this.spanCurrent).text(text);
 		this.currentchart=chartNum;
 		
 		var trh=$("<tr/>");
 		trh.append("<td/>");
 		
 		for (coli in pichart.cols){
-			var txt=decToBin(coli,this.quineTable.literalCount-1);
-			trh.append($("<th/>").text(txt));
+			var tool=decToBin(coli,this.quineTable.literalCount-1) + "b";
+			var txt=coli;
+			trh.append($("<th/>").text(txt).attr("title",tool));
 		}
-		console.log(pichart.rows);
-			$(this.tbody).html("");
+		
+		$(this.tbody).html("");
 		for (rowi in pichart.rows){
 			var tr = $("<tr/>");
 			var row=pichart.rows[rowi];
-	
+			
+			// meanwhile an array was used as index javascript converted that array
+			// automagicaly to a string with a ',' as seperator, nice eh?   
+			rowi = rowi.split(",");
 			tr.append($("<th/>").text(
-				maskedDecToBin(rowi[0],rowi[2],this.quineTable.literalCount-1)
+				maskedDecToBin(rowi[0],rowi[1],this.quineTable.literalCount-1)
 			).addClass("dark"));
 			
 			for (coli in pichart.cols){

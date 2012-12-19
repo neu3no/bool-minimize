@@ -34,6 +34,7 @@ Object.defineProperty(Number.prototype, "literalCount", {
 							return tmp;
 						}
 });
+
 Object.defineProperty(Number.prototype, "oneLiteralCount", {
 	enumerable: false,
 	value: function(){
@@ -98,7 +99,8 @@ Object.defineProperty(Array.prototype, "removeValue", {
 });
 
 
-// not my idea, copied from http://stackoverflow.com/questions/6315180/javascript-search-array-of-arrays
+// not my idea, copied from: 
+// http://stackoverflow.com/questions/6315180/javascript-search-array-of-arrays
 Object.defineProperty(Array.prototype, "containsArray", {
 		enumerable: false,
 		value: function(val) {

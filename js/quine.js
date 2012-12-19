@@ -131,7 +131,6 @@ quine.prototype.compare = function() {
 	for (idx in table) {
 		for (tidx in table[idx]) {
 			if (table[idx][tidx][2] == false) {// not marked as match
-				//console.log("NOMATCH",idx,tidx)
 				tmp[idx].push(table[idx][tidx].slice(0));
 				// i use slicing for a swallow copy to be sure a latr modification
 				// of the source table does not has an effect on it
@@ -203,10 +202,64 @@ quine.prototype.pIChart = function (){
 	return res; 
 }
 
+quine.prototype.pIChartRowDominance = function(){
+	var chart={'mint':new Array(), 'rows': {}, 'cols':{}};
+	var srcchart=this.picharts[this.picharts.length - 1];
+	var matches = 0;
+	
+	chart.mint = srcchart.mint.slice(0);
+	for (i in srcchart.rows){
+		chart.rows[i] = srcchart.rows[i].slice(0);
+	}
+	for (i in srcchart.cols){
+		chart.cols[i] = srcchart.cols[i].slice(0);
+	}
+	
+	for (ri in chart.rows){
+		// at first: remove empty lines
+		if (chart.rows[ri].length == 0){
+			delete chart.rows[ri];
+			matches++;
+		}
+		// then remove all lines which are includes in others
+		for (rib in chart.rows){
+			if (rib!=ri && chart.rows[ri]!=undefined && chart.rows[rib]!=undefined){
+				if (chart.rows[ri].containsEachArray(chart.rows[rib])) {
+					delete chart.rows[rib];
+					matches++;
+					
+					// just ... make cols clean
+					for (coli in chart.cols){
+						var cols=chart.cols[coli].slice(0);
+						chart.cols[coli]=new Array();
+						for (ai in cols){
+							var col=cols[ai];
+							if (rib!=col){
+								chart.cols[coli].push(col);
+							}
+						}
+					}
+					
+				}
+				
+			}
+			
+		}
+			
+	}
+	
+	if (matches>0){		
+		this.picharts.push(chart);
+		//console.log(this.picharts);
+		return true;
+	}
+	return false;
+}
+
 quine.prototype.pIChartColumnDominance = function(){
 	var chart={'mint':new Array(), 'rows': {}, 'cols':{}};
 	var srcchart=this.picharts[this.picharts.length - 1];
-	var orderedcols={}; var min=this.termcount;
+	var orderedcols={}; var min=this.termcount; var max=0;
   var deleted=new Array();
   var matches=0;
 	
@@ -229,12 +282,33 @@ quine.prototype.pIChartColumnDominance = function(){
 	// get lowest 
 	for (i in orderedcols){
 		if (Number(i)<min) min = Number(i);
+		if (Number(i)>max) max = Number(i);
 	}
 
 	
 	// compare each col with lidx X's and lidx+1 X's
 	for (lidx=min; lidx<this.termcount; lidx++){
+		if (orderedcols[lidx] == undefined) continue;
+		for (a=0;a<orderedcols[lidx].length;a++){
+			var ai=orderedcols[lidx][a];
+			for (b=a+1; b<orderedcols[lidx].length; b++){
+				var bi=orderedcols[lidx][b];
+				//console.log("same?",lidx,a,b,ai,bi);
+				if (	chart.cols[bi] != undefined && // we may have removed that alrdy
+							chart.cols[ai] != undefined &&
+							chart.cols[bi].containsEachArray(chart.cols[ai]) &&
+							chart.cols[ai].containsEachArray(chart.cols[bi])
+							){
+								//console.log("same!");
+							// matched, so remove this column
+							delete chart.cols[bi];
+							matches=deleted.push(Number(bi));
+							}
+			}
+		}
+		
 		for (hidx=lidx+1; hidx<this.termcount+1; hidx++){
+			
 			// skip if one is undefined
 			if (orderedcols[lidx]==undefined || 
 					orderedcols[hidx]==undefined)
@@ -264,6 +338,7 @@ quine.prototype.pIChartColumnDominance = function(){
 	for (ri in chart.rows){
 		var trow=chart.rows[ri].slice(0);
 		chart.rows[ri]=new Array();
+		
 		for (vi in trow){
 			if (deleted.indexOf(trow[vi]) == -1){
 				chart.rows[ri].push(Number(trow[vi]));
@@ -273,7 +348,6 @@ quine.prototype.pIChartColumnDominance = function(){
 	
 	if (matches > 0) {
 		this.picharts.push(chart);
-	console.log(this.picharts);
 		return true;
 	}
 	return false;
@@ -300,11 +374,18 @@ quine.prototype.solve = function(callback) {
 	} while (count<maxSteps && res);
 
 
-	// Step2: generate prime implicant chart 
+	// generate prime implicant chart 
 	this.pIChart();
 	
-	// Step2.5: dominance test 1
-	this.pIChartColumnDominance();
+	count = 0;
+	do {
+		// dominance test 1
+		res=this.pIChartColumnDominance();
+		
+		// dominance test 2 
+		res= res || this.pIChartRowDominance();
+		count++;
+	} while (count < maxSteps && res);
 	
 	callback(res);
 }
