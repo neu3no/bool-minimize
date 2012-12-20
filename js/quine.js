@@ -391,6 +391,17 @@ quine.prototype.getPIChart = function(index) {
 	return this.picharts[index];
 };
 
+quine.prototype.getPITerms = function(){
+	var chart=this.picharts[this.picharts.length - 1];
+	var res = new Array();
+	for (ci in chart.cols){
+		for (ai in chart.cols[ci]){
+			res.push(chart.cols[ci][ai]);
+		}
+	}
+	return res;
+}
+
 // triggers callback(bool canceled), when rdy
 quine.prototype.solve = function(callback) {
 	var maxSteps = 10;

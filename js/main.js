@@ -175,6 +175,32 @@ var init = function() {
 				loadScene(1);
 				ttable = new targetTable("#target", q);
 				ptable = new pITable("#chart", q);
+				// ¬ ∨ ∧ 
+				var terms=q.getPITerms();
+				tmp="";
+				for (ti in terms){
+						var inp=inputs+0;
+						var num=terms[ti][0];
+						var msk=terms[ti][1];
+						
+						while (inp>0){
+							var lit= (num>>1<<1 != num);
+							var dc = (msk>>1<<1 != msk);
+							if (!dc){
+								tmp+=(lit ? " " : " ¬");
+								tmp+="x" + inp + " ∧";
+							}
+							num>>=1;
+							msk>>=1;
+							inp--;
+						}
+						tmp=tmp.slice(0, -2);
+						tmp+=" ∨";
+				}
+				
+				tmp=tmp.slice(0, -2);
+				console.log(tmp);
+				
 				solved=true;
 			});
 		} else {
